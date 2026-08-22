@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background-color: #0b0e14;
+  color: #e8eaed;
+}
+
+/* Visible keyboard focus ring per UI/UX Brief v2 §7 */
+:focus-visible {
+  outline: 2px solid #F5A623;
+  outline-offset: 2px;
+}
+
+/* Hero gradient overlay */
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(11, 14, 20, 0.92) 0%,
+    rgba(11, 14, 20, 0.7) 50%,
+    rgba(11, 14, 20, 0.5) 100%
+  );
+}
+
+/* Dot-matrix world map pattern */
+.dot-matrix {
+  background-image: radial-gradient(circle, #F5A623 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+/* Animated pulse for live indicator */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.live-dot {
+  animation: live-pulse 1.6s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0E14;
+}
+::-webkit-scrollbar-thumb {
+  background: #262B36;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #F5A623;
+}
+
+/* Stat number glow */
+.stat-glow {
+  text-shadow: 0 0 40px rgba(245, 166, 35, 0.4);
+}
+
+/* Card hover lift */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(245, 166, 35, 0.08);
+}

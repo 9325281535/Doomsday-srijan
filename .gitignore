@@ -1,0 +1,41 @@
+# Environment and secrets
+.env
+.env.*
+!.env*.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Local databases and runtime files
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Node.js / Next.js
+node_modules/
+.next/
+out/
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE and OS files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
