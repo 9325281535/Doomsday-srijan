@@ -436,6 +436,20 @@ export default function NexSchedulerPage() {
   const [showAddJob, setShowAddJob] = useState(false);
   const wsRef = useRef(null);
   const reconnTimer = useRef(null);
+  const fileInputRef = useRef(null);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      await fetch(${API_BASE}/api/upload-csv, { method: 'POST', body: formData });
+      e.target.value = null; // reset input
+    } catch (err) {
+      console.error("Upload failed", err);
+    }
+  };
 
   const connectWS = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
@@ -481,6 +495,7 @@ export default function NexSchedulerPage() {
         </div>
         <div style={{ flex: 1 }} />
         {[
+          { label: '📁 Upload CSV', color: '#164e63', tc: '#67e8f9', fn: () => fileInputRef.current.click() },
           { label: '+ Add Job', color: '#1e3a4a', tc: '#00d4ff', fn: () => setShowAddJob(true) },
           { label: '🎲 Generate', color: '#1e2840', tc: '#94a3b8', fn: () => api('/api/generate', 'POST', { count: 5 }) },
           { label: '📊 Compare', color: '#2a1a4a', tc: '#a78bfa', fn: handleCompare },
@@ -510,6 +525,7 @@ export default function NexSchedulerPage() {
       </div>
 
       {showComparison && <ComparisonModal data={compData} onClose={() => setShowComparison(false)} />}
+      <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept=".csv" onChange={handleFileUpload} />
       {showAddJob && <AddJobModal onSubmit={handleAddJob} onClose={() => setShowAddJob(false)} />}
 
       <style>{`

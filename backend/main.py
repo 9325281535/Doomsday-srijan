@@ -1,3 +1,5 @@
+import csv
+import io
 """
 main.py - FastAPI application for NexScheduler AI
 REST API + WebSocket for real-time scheduling simulation.
@@ -12,7 +14,7 @@ import time
 from contextlib import asynccontextmanager
 from typing import Any, Dict, List, Optional, Set
 
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import File, UploadFile, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -407,6 +409,44 @@ async def trigger_retrain():
 # ---------------------------------------------------------------------------
 # WebSocket /ws/live
 # ---------------------------------------------------------------------------
+
+
+@app.post("/api/upload-csv")
+async def upload_csv(file: UploadFile = File(...)):
+    content = await file.read()
+    decoded = content.decode("utf-8")
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    engine.reset()
+    
+    count = 0
+    for row in reader:
+        try:
+            priority = row.get("priority", "Medium")
+            if priority not in PRIORITY_VALUES:
+                priority = "Medium"
+                
+            job = Job(
+                id=str(uuid.uuid4()) if "uuid" in globals() else "".join(random.choices(string.ascii_letters, k=8)),
+                name=row.get("name", f"CSVJob-{count}"),
+                priority=priority,
+                deadline=time.time() + float(row.get("deadline_in_seconds", 60)),
+                burst_time=float(row.get("burst_time", 10)),
+                remaining_time=float(row.get("burst_time", 10)),
+                cpu_units=int(row.get("cpu", 2)),
+                gpu_units=int(row.get("gpu", 0)),
+                ram_units=int(row.get("ram", 4)),
+                arrival_time=time.time()
+            )
+            engine.add_job(job)
+            count += 1
+        except Exception as e:
+            print("CSV Parse Error row:", e)
+            continue
+            
+    engine.add_event(f"📁 Loaded {count} jobs from {file.filename}", "started")
+    return {"message": f"Successfully loaded {count} jobs"}
+
 
 @app.websocket("/ws/live")
 async def websocket_live(websocket: WebSocket):
